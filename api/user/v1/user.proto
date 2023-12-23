@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "kratos-demo/api/user/v1;v1";
+
+service User {
+	rpc Register (RegisterRequest) returns (OperateReply) {
+		option (google.api.http) = {
+			post: "/api/users",
+			body: "*"
+		};
+	}
+
+	rpc Login (LoginRequest) returns (LoginReply) {
+		option (google.api.http) = {
+			post: "/api/users/login",
+			body: "*"
+		};
+	}
+
+	rpc GetCurrentUser (GetCurrentUserRequest) returns (UserReply) {
+		option (google.api.http) = {
+			get: "/api/user",
+		};
+	}
+
+	rpc GetUserById (GetUserByIdRequest) returns (UserReply) {
+		option (google.api.http) = {
+			get: "/api/profiles/{user_id}",
+		};
+	}
+
+	rpc UpdateUser (UpdateUserRequest) returns (UserReply) {
+		option (google.api.http) = {
+			put: "/api/user",
+			body: "*"
+		};
+	}
+
+	rpc FollowUser (FollowUserRequest) returns (UserReply) {
+		option (google.api.http) = {
+			post: "/api/profiles/{user_id}/follow",
+			body: "*"
+		};
+	}
+
+	rpc UnfollowUser (UnfollowUserRequest) returns (UserReply) {
+		option (google.api.http) = {
+			delete: "/api/profiles/{user_id}/unfollow",
+		};
+	}
+}
+
+// 返回操作是否成功的时候使用
+message OperateReply{
+  bool success = 1;
+}
+
+// 注册请求
+message RegisterRequest {
+	message User {
+		string username = 1;
+		string email = 2;
+		string password = 3;
+	}
+	User user = 1;
+}
+
+// 登录请求
+message LoginRequest {
+	message User {
+		string email = 1;
+		string password = 2;
+	}
+	User user = 1;
+}
+
+// 登录返回
+message LoginReply {
+	message User {
+		int32 id = 1;         // 用户id
+		string email = 2;     // 邮箱
+		string token = 3;     // token
+		string username = 4;  // 用户名
+		string bio = 5;       // 简介
+		string image = 6;     // 头像
+		int32 following = 7;  // 关注数
+		int32 followers = 8;  // 粉丝数
+	}
+
+	User user = 1;
+}
+
+// 返回用户信息
+message UserReply {
+	message User {
+		int32 id = 1;
+		string email = 2;
+		string username = 3;
+		string bio = 4;
+		string image = 5;
+		int32 following = 6;
+		int32 followers = 7;
+	}
+
+	User user = 1;
+}
+
+// 获取当前用户信息 请求是空的，所以定义个一个空的
+message GetCurrentUserRequest {}
+
+// 更新用户请求
+message UpdateUserRequest {
+	message User {
+		string email = 1;
+		string bio = 2;
+		string image = 3;
+	}
+
+	User user = 1;
+}
+
+// 获取个人信息请求
+message GetUserByIdRequest {
+	int32 user_id = 1;
+}
+
+// 关注用户请求
+message FollowUserRequest {
+	int32 user_id = 1;
+}
+
+// 取消关注用户请求
+message UnfollowUserRequest {
+	int32 user_id = 1;
+}

@@ -1,7 +1,10 @@
 package server
 
 import (
+	articleV1 "kratos-demo/api/article/v1"
 	v1 "kratos-demo/api/helloworld/v1"
+	tagV1 "kratos-demo/api/tag/v1"
+	userV1 "kratos-demo/api/user/v1"
 	"kratos-demo/internal/conf"
 	"kratos-demo/internal/service"
 
@@ -11,7 +14,14 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(
+	c *conf.Server,
+	greeter *service.GreeterService,
+	user *service.UserService,
+	article *service.ArticleService,
+	tag *service.TagService,
+	logger log.Logger,
+) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -28,5 +38,8 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	}
 	srv := grpc.NewServer(opts...)
 	v1.RegisterGreeterServer(srv, greeter)
+	userV1.RegisterUserServer(srv, user)
+	articleV1.RegisterArticleServer(srv, article)
+	tagV1.RegisterTagServer(srv, tag)
 	return srv
 }

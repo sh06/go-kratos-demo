@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package api.tag.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "kratos-demo/api/tag/v1;v1";
+
+service Tag {
+	rpc CreateTag (CreateTagRequest) returns (CreateTagReply) {
+		option (google.api.http) = {
+			post: "/tag"
+			body: "*"
+		};
+	}
+	rpc ListTag (ListTagRequest) returns (ListTagReply) {
+		option (google.api.http) = {
+			get: "/tags"
+		};
+	}
+}
+
+message CreateTagRequest {
+	string name = 1;
+}
+message CreateTagReply {
+	int32 id = 1;
+	string name = 2;
+}
+
+// 定义为空，直接获取所有的
+message ListTagRequest {}
+
+message ListTagReply {
+	message Tag {
+		int32 id = 1;
+		string name = 2;
+	}
+
+	repeated Tag data = 1;
+}

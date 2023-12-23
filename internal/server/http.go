@@ -1,7 +1,10 @@
 package server
 
 import (
+	articleV1 "kratos-demo/api/article/v1"
 	v1 "kratos-demo/api/helloworld/v1"
+	tagV1 "kratos-demo/api/tag/v1"
+	userV1 "kratos-demo/api/user/v1"
 	"kratos-demo/internal/conf"
 	"kratos-demo/internal/service"
 
@@ -11,7 +14,14 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
+func NewHTTPServer(
+	c *conf.Server,
+	greeter *service.GreeterService,
+	user *service.UserService,
+	article *service.ArticleService,
+	tag *service.TagService,
+	logger log.Logger,
+) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -28,5 +38,8 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	}
 	srv := http.NewServer(opts...)
 	v1.RegisterGreeterHTTPServer(srv, greeter)
+	userV1.RegisterUserHTTPServer(srv, user)
+	articleV1.RegisterArticleHTTPServer(srv, article)
+	tagV1.RegisterTagHTTPServer(srv, tag)
 	return srv
 }

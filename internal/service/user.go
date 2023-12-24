@@ -4,18 +4,36 @@ import (
 	"context"
 
 	pb "kratos-demo/api/user/v1"
+	"kratos-demo/internal/biz"
 )
 
 type UserService struct {
 	pb.UnimplementedUserServer
+
+	uc *biz.UserUsecase
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(uc *biz.UserUsecase) *UserService {
+	return &UserService{
+		uc: uc,
+	}
 }
 
 func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.OperateReply, error) {
-	return &pb.OperateReply{}, nil
+	error := s.uc.Register(ctx, &biz.RegisterReq{
+		Email:    req.User.Email,
+		Password: req.User.Password,
+		Username: req.User.Username,
+	})
+
+	ret := true
+	if error != nil {
+		ret = false
+	}
+
+	return &pb.OperateReply{
+		Success: ret,
+	}, nil
 }
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginReply, error) {
 	return &pb.LoginReply{}, nil

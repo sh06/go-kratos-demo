@@ -35,8 +35,25 @@ func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 		Success: ret,
 	}, nil
 }
+
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginReply, error) {
-	return &pb.LoginReply{}, nil
+	user, _ := s.uc.Login(ctx, &biz.LoginReq{
+		Email:    req.User.Email,
+		Password: req.User.Password,
+	})
+
+	return &pb.LoginReply{
+		User: &pb.LoginReply_User{
+			Id:        int32(user.ID),
+			Email:     user.Email,
+			Token:     user.Token,
+			Username:  user.Username,
+			Bio:       user.Bio,
+			Image:     user.Image,
+			Following: 0,
+			Followers: 0,
+		},
+	}, nil
 }
 func (s *UserService) GetCurrentUser(ctx context.Context, req *pb.GetCurrentUserRequest) (*pb.UserReply, error) {
 	return &pb.UserReply{}, nil

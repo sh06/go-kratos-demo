@@ -6,6 +6,7 @@ import (
 	tagV1 "kratos-demo/api/tag/v1"
 	userV1 "kratos-demo/api/user/v1"
 	"kratos-demo/internal/conf"
+	"kratos-demo/internal/pkg/encode"
 	"kratos-demo/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -23,6 +24,8 @@ func NewHTTPServer(
 	logger log.Logger,
 ) *http.Server {
 	var opts = []http.ServerOption{
+		http.ResponseEncoder(encode.ResponseEncoder),
+		http.ErrorEncoder(encode.ErrorEncoder),
 		http.Middleware(
 			recovery.Recovery(),
 		),

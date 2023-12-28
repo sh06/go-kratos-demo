@@ -10,21 +10,21 @@ import (
 )
 
 type ResponseError struct {
-	Code    int    `json:"code"`
-	Reason  string `json:"reason"`
-	Message string `json:"message"`
+	Code   int    `json:"code"`
+	Reason string `json:"reason"`
+	Msg    string `json:"msg"`
 }
 
 func NewResponseError(code int, reason, message string) *ResponseError {
 	return &ResponseError{
-		Code:    code,
-		Reason:  reason,
-		Message: message,
+		Code:   code,
+		Reason: reason,
+		Msg:    message,
 	}
 }
 
 func (e *ResponseError) Error() string {
-	return fmt.Sprintf("HTTPError code: %d message: %s reason: %s", e.Code, e.Message, e.Reason)
+	return fmt.Sprintf("ResponseError code: %d message: %s reason: %s", e.Code, e.Msg, e.Reason)
 }
 
 func FromError(err error) *ResponseError {
@@ -32,17 +32,14 @@ func FromError(err error) *ResponseError {
 		return nil
 	}
 
-	// 创建一个 kratos 的 Error，然后判断传进来的 err 是否是这个类型
-	// 是的话，就变成我们自定义的格式，返回一个 ResponseError
 	if se := new(e.Error); errors.As(err, &se) {
 		return NewResponseError(int(se.Code), se.Reason, se.Message)
 	}
 
-	// 返回默认的错误
 	return &ResponseError{
-		Code:    500,
-		Reason:  "UNKNOWN",
-		Message: "unknown request error",
+		Code:   500,
+		Reason: "UNKNOWN",
+		Msg:    "unknown request error",
 	}
 }
 

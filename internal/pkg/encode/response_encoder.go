@@ -6,15 +6,15 @@ import (
 
 func ResponseEncoder(w http.ResponseWriter, r *http.Request, data interface{}) error {
 	type Response struct {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data"`
+		Code int         `json:"code"`
+		Msg  string      `json:"msg"`
+		Data interface{} `json:"data"`
 	}
 
 	res := &Response{
-		Code:    200,
-		Data:    data,
-		Message: "",
+		Code: 200,
+		Data: data,
+		Msg:  "",
 	}
 
 	codec, _ := http.CodecForRequest(r, "Accept")

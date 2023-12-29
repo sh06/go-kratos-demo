@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"kratos-demo/internal/biz"
+	"kratos-demo/internal/pkg/util"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -55,8 +56,28 @@ func (r *userRepo) GetByEmail(ctx context.Context, email string) (*biz.User, err
 	}, nil
 }
 
+func (r *userRepo) GetByUsername(ctx context.Context, username string) (*biz.User, error) {
+	var user User
+	result := r.data.db.Where("username = ?", username).First(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &biz.User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Password:  user.Password,
+		Email:     user.Email,
+		Bio:       user.Bio,
+		Image:     user.Image,
+		CreatedAt: user.CreatedAt,
+	}, nil
+}
+
 func (r *userRepo) Save(ctx context.Context, ur *biz.RegisterReq) (uint64, error) {
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	ur.Password = util.HashPassword(ur.Password)
 
 	user := User{
 		Username:  ur.Username,

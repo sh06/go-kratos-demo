@@ -3,8 +3,25 @@ syntax = "proto3";
 package api.user.v1;
 
 import "google/api/annotations.proto";
+import "errors/errors.proto";
 
 option go_package = "kratos-demo/api/user/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.user.v1";
+
+enum ErrorReason {
+  // 设置缺省错误码
+  option (errors.default_code) = 500;
+
+	// 用户不存在
+  ERROR_USER_NOT_FOUND = 0 [(errors.code) = 450];
+	// 登录用户密码错误
+	ERROR_USER_PASSWORD_ERROR = 1 [(errors.code) = 450];
+	// 用户邮箱已注册
+	ERROR_USER_EMAIL_EXIST = 2 [(errors.code) = 450];
+	// 用户名已注册
+	ERROR_USER_USERNAME_EXIST = 3 [(errors.code) = 450];
+}
 
 service User {
 	rpc Register (RegisterRequest) returns (OperateReply) {

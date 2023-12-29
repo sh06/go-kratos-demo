@@ -20,27 +20,28 @@ func NewUserService(uc *biz.UserUsecase) *UserService {
 }
 
 func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.OperateReply, error) {
-	error := s.uc.Register(ctx, &biz.RegisterReq{
+	if err := s.uc.Register(ctx, &biz.RegisterReq{
 		Email:    req.User.Email,
 		Password: req.User.Password,
 		Username: req.User.Username,
-	})
-
-	ret := true
-	if error != nil {
-		ret = false
+	}); err != nil {
+		return nil, err
 	}
 
 	return &pb.OperateReply{
-		Success: ret,
+		Success: true,
 	}, nil
 }
 
 func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginReply, error) {
-	user, _ := s.uc.Login(ctx, &biz.LoginReq{
+	user, err := s.uc.Login(ctx, &biz.LoginReq{
 		Email:    req.User.Email,
 		Password: req.User.Password,
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &pb.LoginReply{
 		User: &pb.LoginReply_User{

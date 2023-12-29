@@ -6,6 +6,7 @@ import (
 	tagV1 "kratos-demo/api/tag/v1"
 	userV1 "kratos-demo/api/user/v1"
 	"kratos-demo/internal/conf"
+	"kratos-demo/internal/pkg/middleware/auth"
 	"kratos-demo/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -25,6 +26,7 @@ func NewGRPCServer(
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			auth.JwtAuth("secret"),
 		),
 	}
 	if c.Grpc.Network != "" {

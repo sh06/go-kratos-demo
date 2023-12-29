@@ -7,6 +7,7 @@ import (
 	userV1 "kratos-demo/api/user/v1"
 	"kratos-demo/internal/conf"
 	"kratos-demo/internal/pkg/encode"
+	"kratos-demo/internal/pkg/middleware/auth"
 	"kratos-demo/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -28,6 +29,7 @@ func NewHTTPServer(
 		http.ErrorEncoder(encode.ErrorEncoder),
 		http.Middleware(
 			recovery.Recovery(),
+			auth.JwtAuth("secret"),
 		),
 	}
 	if c.Http.Network != "" {

@@ -41,6 +41,10 @@ func ParseJwt(jwtString, secretKey string) (*User, error) {
 		return []byte(secretKey), nil
 	})
 
+	if err != nil {
+		return nil, err
+	}
+
 	if claims, ok := t.Claims.(*User); ok && t.Valid {
 		return claims, nil
 	} else {

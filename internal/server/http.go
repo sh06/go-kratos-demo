@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	articleV1 "kratos-demo/api/article/v1"
 	v1 "kratos-demo/api/helloworld/v1"
 	tagV1 "kratos-demo/api/tag/v1"
@@ -12,8 +13,21 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/transport/http"
 )
+
+func NewSkipListMatcher() selector.MatchFunc {
+	SkipList := make(map[string]struct{})
+	SkipList["/api.user.v1.User/Login"] = struct{}{}
+	//SkipList["/api.user.v1.User/Register"] = struct{}{}
+	return func(ctx context.Context, operation string) bool {
+		if _, ok := SkipList[operation]; ok {
+			return false
+		}
+		return true
+	}
+}
 
 // NewHTTPServer new an HTTP server.
 func NewHTTPServer(
@@ -29,7 +43,7 @@ func NewHTTPServer(
 		http.ErrorEncoder(encode.ErrorEncoder),
 		http.Middleware(
 			recovery.Recovery(),
-			auth.JwtAuth("secret"),
+			selector.Server(auth.JwtAuth("secret")).Match(NewSkipListMatcher()).Build(),
 		),
 	}
 	if c.Http.Network != "" {

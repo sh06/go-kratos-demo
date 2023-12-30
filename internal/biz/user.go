@@ -7,7 +7,9 @@ import (
 	pb "kratos-demo/api/user/v1"
 	"kratos-demo/internal/pkg/util"
 
+	e "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/spf13/cast"
 	"gorm.io/gorm"
 )
 
@@ -80,7 +82,11 @@ func (uc *UserUsecase) Login(ctx context.Context, loginReq *LoginReq) (*User, er
 		return nil, pb.ErrorErrorUserPasswordError("用户密码错误")
 	}
 
-	// 生成token
+	token, err := util.GenerateJWT(cast.ToString(user.ID), "secret")
+	if err != nil {
+		return nil, e.New(500, "ERROR_CREATE_TOKEN_FAILED", "系统错误，请稍后再试")
+	}
 
+	user.Token = token
 	return user, nil
 }
